@@ -192,53 +192,119 @@ async function main() {
      * Add trees
      */
 
+    function generatePoints(centerX, centerY, radius, numPoints) {
+        const points = [];
+
+        for (let i = 0; i < numPoints; i++) {
+            const angle = Math.random() * 2 * Math.PI;
+            const radiusMultiplier = Math.sqrt(-2 * Math.log(Math.random()));
+
+            const x = centerX + radius * radiusMultiplier * Math.cos(angle);
+            const y = centerY + radius * radiusMultiplier * Math.sin(angle);
+
+            points.push({ x, y });
+        }
+
+        return points;
+    }
+
+
     // instantiate a GLTFLoader:
      const loader = new GLTFLoader();
 
-     loader.load(
-         // resource URL
-         'resources/models/kenney_nature_kit/tree_thin.glb',
-         // called when resource is loaded
-         (object) => {
-             for (let x = -150; x < 150; x += 8) {
-                 for (let z = -150; z < 150; z += 8) {
+    // Loader for tree model
+    loader.load(
+        'threejs-template-master/resources/models/kenney_nature_kit/tree_thin.glb',
+        (object) => {
+            const gaussianPoints = generatePoints(0, 0, 100, 2000);
 
-                     const px = x + 1 + (6 * Math.random()) - 3;
-                     const pz = z + 1 + (6 * Math.random()) - 3;
+            // Place trees based on gaussian points
+            for (const point of gaussianPoints) {
+                const px = point.x;
+                const pz = point.y;
 
-                     const height = terrainGeometry.getHeightAt(px, pz);
+                const height = terrainGeometry.getHeightAt(px, pz);
 
-                     if (height < 30 && height > 6 ) {
-                         const tree = object.scene.children[0].clone();
+                // Only place trees within the specified height
+                if (height < 20 && height > 6) {
+                    const tree = object.scene.children[0].clone();
 
-                         tree.traverse((child) => {
-                             if (child.isMesh) {
-                                 child.castShadow = true;
-                                 child.receiveShadow = true;
-                             }
-                         });
+                    tree.traverse((child) => {
+                        if (child.isMesh) {
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                        }
+                    });
 
-                         tree.position.x = px;
-                         tree.position.y = height - 2;
-                         tree.position.z = pz;
+                    tree.position.x = px;
+                    tree.position.y = height - 2;
+                    tree.position.z = pz;
 
-                         tree.rotation.y = Math.random() * (2 * Math.PI);
+                    tree.rotation.y = Math.random() * (2 * Math.PI);
 
-                         tree.scale.multiplyScalar(1.5 + Math.random() * 1);
+                    tree.scale.multiplyScalar(1.5 + Math.random() * 1);
 
-                         scene.add(tree);
+                    scene.add(tree);
+                }
+            }
+        },
+        // Progress callback
+        (xhr) => {
+            console.log(((xhr.loaded / xhr.total) * 100) + '% loaded');
+        },
+        // Error callback
+        (error) => {
+            console.error('Error loading model.', error);
+        }
+    );
+
+    /* old tree code
+
+         loader.load(
+             // resource URL
+             'threejs-template-master/resources/models/kenney_nature_kit/tree_thin.glb',
+             // called when resource is loaded
+             (object) => {
+                 for (let x = -150; x < 150; x += 8) {
+                     for (let z = -150; z < 150; z += 8) {
+
+                         const px = x + 1 + (6 * Math.random()) - 3;
+                         const pz = z + 1 + (6 * Math.random()) - 3;
+
+                         const height = terrainGeometry.getHeightAt(px, pz);
+
+                         if (height < 30 && height > 6 ) {
+                             const tree = object.scene.children[0].clone();
+
+                             tree.traverse((child) => {
+                                 if (child.isMesh) {
+                                     child.castShadow = true;
+                                     child.receiveShadow = true;
+                                 }
+                             });
+
+                             tree.position.x = px;
+                             tree.position.y = height - 2;
+                             tree.position.z = pz;
+
+                             tree.rotation.y = Math.random() * (2 * Math.PI);
+
+                             tree.scale.multiplyScalar(1.5 + Math.random() * 1);
+
+                             scene.add(tree);
+                         }
+
                      }
-
                  }
+             },
+             (xhr) => {
+                 console.log(((xhr.loaded / xhr.total) * 100) + '% loaded');
+             },
+             (error) => {
+                 console.error('Error loading model.', error);
              }
-         },
-         (xhr) => {
-             console.log(((xhr.loaded / xhr.total) * 100) + '% loaded');
-         },
-         (error) => {
-             console.error('Error loading model.', error);
-         }
-     );
+         );
+    */
 
     /**
      * Set up camera controller:
