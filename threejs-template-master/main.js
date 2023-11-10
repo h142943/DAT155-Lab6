@@ -10,17 +10,17 @@ import {
     Vector3,
     AxesHelper, CubeTextureLoader, PlaneGeometry, MeshBasicMaterial,
     Group, Clock
-} from './lib/three.module.js';
+} from './js/lib/three.module.js';
 
-import Utilities from './lib/Utilities.js';
-import MouseLookController from './controls/MouseLookController.js';
+import Utilities from './js/lib/Utilities.js';
+import MouseLookController from './js/controls/MouseLookController.js';
 
-import TextureSplattingMaterial from './materials/TextureSplattingMaterial.js';
-import TerrainBufferGeometry from './terrain/TerrainBufferGeometry.js';
-import { GLTFLoader } from './loaders/GLTFLoader.js';
-import { SimplexNoise } from './lib/SimplexNoise.js';
-import {Water} from "./objects/water/water2.js";
-import {VRButton} from "./lib/VRButton.js";
+import TextureSplattingMaterial from './js/materials/TextureSplattingMaterial.js';
+import TerrainBufferGeometry from './js/terrain/TerrainBufferGeometry.js';
+import { GLTFLoader } from './js/loaders/GLTFLoader.js';
+import { SimplexNoise } from './js/lib/SimplexNoise.js';
+import {Water} from "./js/objects/water/water2.js";
+import {VRButton} from "./js/lib/VRButton.js";
 
 async function main() {
     const loc = window.location.pathname;
@@ -126,7 +126,7 @@ async function main() {
         width,
         heightmapImage,
         // noiseFn: simplex.noise.bind(simplex),
-        numberOfSubdivisions: 512,
+        numberOfSubdivisions: 600,
         height: 42 * 3
     });
 
