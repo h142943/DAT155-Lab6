@@ -9,7 +9,7 @@ import {
     DirectionalLight,
     Vector3,
     AxesHelper, CubeTextureLoader, PlaneGeometry, MeshBasicMaterial,
-    Group, Clock
+    Group, Clock, PlaneBufferGeometry, BufferAttribute, MeshStandardMaterial, Color
 } from './js/lib/three.module.js';
 
 import Utilities from './js/lib/Utilities.js';
@@ -21,6 +21,7 @@ import { GLTFLoader } from './js/loaders/GLTFLoader.js';
 import { SimplexNoise } from './js/lib/SimplexNoise.js';
 import {Water} from "./js/objects/water/water2.js";
 import {VRButton} from "./js/lib/VRButton.js";
+import {Smoke} from "./js/objects/Smoke.js";
 
 async function main() {
     const loc = window.location.pathname;
@@ -187,6 +188,54 @@ async function main() {
     water.rotation.x = - Math.PI / 2;
 
     scene.add( water );
+
+    /**Smoke*/
+    const smoke = new Smoke(camera,scene);
+
+    /**
+     * Create the Lava geometry:
+     */
+        // Create a lava texture
+    const lavaTexture = new TextureLoader().load('resources/textures/lavaTexture.jpg');
+
+    // Create an emissive map for the lava
+    const emissiveMap = new TextureLoader().load('resources/textures/emissivelava.jpg');
+
+    // Create a displacement map for the lava
+    const displacementMap = new TextureLoader().load('resources/textures/displacedmentlava.png');
+
+    /*lavaTexture.wrapS = RepeatWrapping;
+    lavaTexture.wrapT = RepeatWrapping;
+    lavaTexture.repeat.set(1, 1);*/
+
+    // Create a lava geometry (e.g., a cone for the volcano)
+    const lavaGeometry = new PlaneBufferGeometry(20, 20, 256, 256);
+
+    // Modify UV coordinates to make the entire texture wave
+    lavaGeometry.setAttribute('uv2', new BufferAttribute(lavaGeometry.attributes.uv.array, 2));
+
+    // Create a lava material with emissive properties
+    const lavaMaterial = new MeshStandardMaterial({
+        map: lavaTexture,
+        emissive: new Color(0xff0000), // Emissive color (red)
+        emissiveMap:emissiveMap,
+        emissiveIntensity: 1.0, // Emission strength
+        displacementMap: displacementMap,
+        displacementScale: 1.0, // Adjust the scale to control the wave height
+        roughness: 0.7, // Adjust this based on the surface properties
+        metalness: 0.0, // Adjust this based on the surface properties
+    });
+
+    // Create a lava mesh using the lava material and geometry
+    const lavaMesh = new Mesh(lavaGeometry, lavaMaterial);
+
+    // Position the lava mesh
+    lavaMesh.rotation.x = - Math.PI / 2;
+    lavaMesh.position.set(0, 64, -5.5);
+    lavaMesh.scale.set(0.7, 0.7, 0.7);
+
+    // Add the lava mesh to the scene
+    scene.add(lavaMesh);
 
     /**
      * Add trees
@@ -401,6 +450,20 @@ async function main() {
         }
         return new Vector3();
     }
+    // Animation loop to make the smoke rise
+    function animateSmoke(){
+        smoke.tick(clock);
+    }
+
+    // Create an animate function to render the scene
+    function animateLava() {
+
+        const time = clock.getElapsedTime();
+        const displacementScale = 1.0 + Math.sin(time * 2.0) * 1;
+
+        // Update the displacementScale property in the material
+        lavaMaterial.displacementScale = displacementScale;
+    }
     function loop() {
         //switching to clock because we can no longer use perfomance due to switching to animation loop (does the same thing)
         const delta = clock.getDelta();
@@ -438,10 +501,15 @@ async function main() {
         const minHight = terrainGeometry.getHeightAt(user.position.x, user.position.z) + terrain.position.y+1;
         user.position.y = Math.max(user.position.y, minHight);
 
+        // Call the animateSmoke function to update the smoke particles
+        animateSmoke();
+
+        // Call the animate function to start rendering
+        animateLava();
+
         const time = performance.now() * 0.001;
 
         water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
-
 
         // render scene:
         renderer.render(scene, camera);
