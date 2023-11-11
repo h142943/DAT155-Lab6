@@ -107,7 +107,7 @@ export class Smoke {
             rotation_from:0.5,
             rotation_to:1,
             speed_from:0.008, //endret
-            speed_to:0.03, //endret
+            speed_to:0.03   , //endret
             scale_from:3, // endret
             scale_increase:0.005,
             color_from:[2,2,2],

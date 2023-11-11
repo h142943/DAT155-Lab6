@@ -204,10 +204,6 @@ async function main() {
     // Create a displacement map for the lava
     const displacementMap = new TextureLoader().load('resources/textures/displacedmentlava.png');
 
-    /*lavaTexture.wrapS = RepeatWrapping;
-    lavaTexture.wrapT = RepeatWrapping;
-    lavaTexture.repeat.set(1, 1);*/
-
     // Create a lava geometry (e.g., a cone for the volcano)
     const lavaGeometry = new PlaneBufferGeometry(20, 20, 256, 256);
 
