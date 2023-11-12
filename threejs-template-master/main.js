@@ -196,13 +196,13 @@ async function main() {
      * Create the Lava geometry:
      */
         // Create a lava texture
-    const lavaTexture = new TextureLoader().load('resources/textures/lavaTexture.jpg');
+    const lavaTexture = new TextureLoader().load('threejs-template-master/resources/textures/lavaTexture.jpg');
 
     // Create an emissive map for the lava
-    const emissiveMap = new TextureLoader().load('resources/textures/emissivelava.jpg');
+    const emissiveMap = new TextureLoader().load('threejs-template-master/resources/textures/emissivelava.jpg');
 
     // Create a displacement map for the lava
-    const displacementMap = new TextureLoader().load('resources/textures/displacedmentlava.png');
+    const displacementMap = new TextureLoader().load('threejs-template-master/resources/textures/displacedmentlava.png');
 
     // Create a lava geometry (e.g., a cone for the volcano)
     const lavaGeometry = new PlaneBufferGeometry(20, 20, 256, 256);
@@ -255,7 +255,7 @@ async function main() {
 
 
     // instantiate a GLTFLoader:
-     const loader = new GLTFLoader();
+    const loader = new GLTFLoader();
 
     // Loader for tree model
     loader.load(
