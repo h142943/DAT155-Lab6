@@ -94,18 +94,18 @@ export class Smoke {
 
         // Add a particle emitter configuration to the array
         this.particles_emitter.push({
-            position:{x:-1,y:70,z:-5.5},
-            radius_1:0.02,
-            radius_2:1,
+            position:{x:-2,y:65,z:-5.5},
+            radius_1:0.5,
+            radius_2:1.5,
             radius_height:5,
-            add_time:0.00001, //
+            add_time:0.001,
             elapsed:0,
-            live_time_from:0.01, //
-            live_time_to:0.1, //
+            live_time_from:7,
+            live_time_to:7.5,
             opacity_decrease:0.008,
             rotation_from:0.5,
             rotation_to:1,
-            speed_from:0.0005,
+            speed_from:0.005,
             speed_to:0.01,
             scale_from:0.2,
             scale_increase:0.004,
