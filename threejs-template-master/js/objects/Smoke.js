@@ -109,7 +109,7 @@ export class Smoke {
             speed_to:0.01,
             scale_from:0.2,
             scale_increase:0.004,
-            color_from:[2,2,2],
+            color_from:[1,1,1],
             color_to:[0,0,0],
             color_speed_from:0.4,
             color_speed_to:0.4,
