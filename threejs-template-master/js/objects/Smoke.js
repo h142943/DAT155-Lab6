@@ -94,7 +94,7 @@ export class Smoke {
 
         // Add a particle emitter configuration to the array
         this.particles_emitter.push({
-            position:{x:-2,y:65,z:-5.5},
+            position:{x:-1,y:65,z:-5.5},
             radius_1:0.5,
             radius_2:1.5,
             radius_height:5,
