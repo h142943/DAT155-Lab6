@@ -140,12 +140,8 @@ async function main() {
             cameraPosition.y += 2;
         }
 
-
-
         camera.position.y = cameraPosition.y;
     }
-
-
 
     /**
      * Add terrain:
@@ -296,8 +292,8 @@ async function main() {
 
     // Loader for tree model
     loader.load(
-        //'threejs-template-master/resources/models/birch_tree.glb',
-        'threejs-template-master/resources/models/kenney_nature_kit/tree_thin.glb',
+        'threejs-template-master/resources/models/edited_tree.glb',
+        //'threejs-template-master/resources/models/transparent_tree.glb',
         (object) => {
             const gaussianPoints = generatePoints(0, 0, 100, 2000);
 
@@ -324,7 +320,7 @@ async function main() {
                     tree.position.y = height - 2;
                     tree.position.z = pz;
 
-                    tree.rotation.y = Math.random() * (2 * Math.PI);
+                    //tree.rotation.y = Math.random() * (2 * Math.PI);
 
                     tree.scale.multiplyScalar(1.5 + Math.random() * 1);
 
