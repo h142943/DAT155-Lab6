@@ -109,6 +109,43 @@ async function main() {
     camera.position.y = 20;
     camera.rotation.x -= Math.PI * 0.25;
 
+    function UpdateCamera(moveSpeed, velocity) {
+
+        const cameraPosition = camera.position;
+
+        velocity.applyQuaternion(camera.quaternion);
+        cameraPosition.add(velocity);
+
+        // Test for vannet
+        if (cameraPosition.y <= water.position.y + 1){
+            cameraPosition.y = water.position.y + 1;
+        }
+
+        // Test for terreng:
+
+        const rayDirection = new Vector3(0, -1, 0);
+        const ray = new Raycaster(cameraPosition, rayDirection, 0, 2);
+
+        const intersects = ray.intersectObject(terrain);
+        const intersects2 = ray.intersectObject(lavaMesh);
+
+        if (intersects.length > 0) {
+            // Camera is below the terrain, adjust its position
+            cameraPosition.copy(intersects[0].point);
+            cameraPosition.y += 2;
+        }
+        if (intersects2.length > 0) {
+            // Camera is below the terrain, adjust its position
+            cameraPosition.copy(intersects2[0].point);
+            cameraPosition.y += 2;
+        }
+
+
+
+        camera.position.y = cameraPosition.y;
+    }
+
+
 
     /**
      * Add terrain:
@@ -259,6 +296,7 @@ async function main() {
 
     // Loader for tree model
     loader.load(
+        //'threejs-template-master/resources/models/birch_tree.glb',
         'threejs-template-master/resources/models/kenney_nature_kit/tree_thin.glb',
         (object) => {
             const gaussianPoints = generatePoints(0, 0, 100, 2000);
