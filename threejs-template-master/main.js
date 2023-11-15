@@ -350,46 +350,6 @@ async function main() {
         }
     );
 
-    /**
-    * Add a rock:
-    */
-
-    const rockLoader = new GLTFLoader();
-    rockLoader.load(
-        'threejs-template-master/resources/models/lavaRock/obsidienne_rhyolitique_rock.glb',
-        (rockObject) => {
-            const rock = rockObject.scene;
-
-            // Add shadow
-            rock.traverse((child) => {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
-            });
-
-            // Set the position of the rock (x,y,z)
-            const xPos = 60, zPos = 125;
-            const yPos = terrainGeometry.getHeightAt(xPos, zPos);
-            rock.position.set(xPos, yPos, zPos);
-
-            // Set the scale of the rock
-            rock.scale.set(1,1,1);
-
-            // Add the rock to the scene
-            scene.add(rock);
-        },
-        // Progress callback
-        (xhr) => {
-            console.log('Rock loading: ' + ((xhr.loaded / xhr.total) * 100) + '% loaded');
-        },
-        // Error callback
-        (error) => {
-            console.error('Error loading Rock model.', error);
-        }
-    );
-
-
 
     /**
      * Set up camera controller:
