@@ -93,22 +93,23 @@ export class Smoke {
         this.particles_emitter = []; // Initialize an array for particles emitter settings
 
         // Add a particle emitter configuration to the array
+        /*
         this.particles_emitter.push({
             position:{x:-1,y:65,z:-5.5},
             radius_1:0.5,
             radius_2:1.5,
-            radius_height:5,
-            add_time:0.001,
+            radius_height:5,//
+            add_time:0.0001,//
             elapsed:0,
             live_time_from:7,
             live_time_to:7.5,
             opacity_decrease:0.008,
             rotation_from:0.5,
             rotation_to:1,
-            speed_from:0.005,
-            speed_to:0.01,
+            speed_from:0.05, //
+            speed_to:0.1, //
             scale_from:0.2,
-            scale_increase:0.004,
+            scale_increase:0.04, //
             color_from:[1,1,1],
             color_to:[0,0,0],
             color_speed_from:0.4,
@@ -119,6 +120,38 @@ export class Smoke {
             blend:0.8,
             texture:1,
         });
+
+         */
+        this.particles_emitter.push({
+            position: { x: -1, y: 65, z: -5.5 },
+            radius_1: 5.0,
+            radius_2: 15.0,
+            radius_height: 400, // Increase the vertical range for a taller smoke column
+            add_time: 0.0001,
+            elapsed: 0,
+            live_time_from: 600, // Increase the minimum live time
+            live_time_to: 1200, // Increase the maximum live time
+            opacity_decrease: 0.005,
+            rotation_from: 0.1,
+            rotation_to: 0.3,
+            speed_from: 0.1, // Increase the minimum speed
+            speed_to: 0.2, // Increase the maximum speed
+            scale_from: 4, // Increase the initial scale
+            scale_increase: 0.04,
+            color_from: [0.7, 0.7, 0.7],
+            color_to: [0.5, 0.5, 0.5],
+            color_speed_from: 0.2,
+            color_speed_to: 0.2,
+            brightness_from: 1,
+            brightness_to: 1,
+            opacity: 1,
+            blend: 0.8,
+            texture: 1,
+        });
+
+
+
+
 
         this.geometry = new THREE.InstancedBufferGeometry(); // Create an InstancedBufferGeometry to render particles
         // Define attributes for particles
@@ -203,6 +236,7 @@ export class Smoke {
     }
 
     // ____________________ PERTICLES EMMITER UPDATE ____________________
+    /*
     particleEmitterUpdate() {
         let item;
         let max = this.particles_emitter.length;
@@ -263,6 +297,66 @@ export class Smoke {
             }
         }
         alive.length = i;
+        this.particles_smoke_a = alive;
+    }
+*/
+    particleEmitterUpdate() {
+        let item;
+        let max = this.particles_emitter.length;
+
+        for (let n = 0; n < max; n++) {
+            item = this.particles_emitter[n];
+
+            let add = 0;
+
+            item.elapsed += this.delta;
+            add = Math.floor(item.elapsed / item.add_time);
+            item.elapsed -= add * item.add_time;
+            if (add > 0.016 / item.add_time * 60) {
+                item.elapsed = 0;
+                add = 0;
+            }
+
+            while (add--) {
+                this.particleEmitterEmit(item);
+            }
+        }
+
+        max = this.particles_smoke_a.length;
+        const alive = [];
+
+        for (let j = 0; j < max; j++) {
+            item = this.particles_smoke_a[j];
+
+            if (item.live > 0 && item.color[3] > 0) {
+                // Update color based on elapsed time
+                const brightness = Math.random() * (item.brightness_to - item.brightness_from) + item.brightness_from;
+                const color_r = item.color_from[0] + (item.color_to[0] - item.color_from[0]) * item.color_pr;
+                const color_g = item.color_from[1] + (item.color_to[1] - item.color_from[1]) * item.color_pr;
+                const color_b = item.color_from[2] + (item.color_to[2] - item.color_from[2]) * item.color_pr;
+                item.color_pr += this.delta * item.color_speed;
+                item.color[0] = color_r * brightness;
+                item.color[1] = color_g * brightness;
+                item.color[2] = color_b * brightness;
+
+                // Update position based on wind
+                item.offset[0] += item.quaternion[0] + this.wind_x;
+                item.offset[1] += item.quaternion[1] + this.wind_y;
+                item.offset[2] += item.quaternion[2] + this.wind_z;
+
+                // Update scale and opacity
+                item.scale[0] += item.scale_increase;
+                item.scale[1] += item.scale_increase;
+                item.live -= this.delta;
+                item.color[3] -= item.opacity_decrease;
+
+                // Check if the particle is still alive
+                if (item.color[3] > 0) {
+                    alive.push(item);
+                }
+            }
+        }
+
         this.particles_smoke_a = alive;
     }
 

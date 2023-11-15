@@ -8,8 +8,17 @@ import {
     RepeatWrapping,
     DirectionalLight,
     Vector3,
-    AxesHelper, CubeTextureLoader, PlaneGeometry, MeshBasicMaterial,
-    Group, Clock, PlaneBufferGeometry, BufferAttribute, MeshStandardMaterial, Color
+    AxesHelper,
+    CubeTextureLoader,
+    PlaneGeometry,
+    MeshBasicMaterial,
+    Group,
+    Clock,
+    PlaneBufferGeometry,
+    BufferAttribute,
+    MeshStandardMaterial,
+    Color,
+    Raycaster
 } from './js/lib/three.module.js';
 
 import Utilities from './js/lib/Utilities.js';
@@ -64,6 +73,7 @@ async function main() {
 
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFSoftShadowMap;
+    //renderer.outputEncoding = GammaEncoding;
 
     /**
      * Handle window resize:
@@ -88,6 +98,7 @@ async function main() {
     /**
      * Add light
      */
+
     const directionalLight = new DirectionalLight(0xffffff);
     directionalLight.position.set(300, 400, 0);
 
@@ -106,7 +117,7 @@ async function main() {
     scene.add(directionalLight.target);
 
     camera.position.z = 60;
-    camera.position.y = 20;
+    camera.position.y =70;
     camera.rotation.x -= Math.PI * 0.25;
 
     function UpdateCamera(moveSpeed, velocity) {
@@ -292,10 +303,9 @@ async function main() {
 
     // Loader for tree model
     loader.load(
-        'threejs-template-master/resources/models/edited_tree.glb',
-        //'threejs-template-master/resources/models/transparent_tree.glb',
+        'threejs-template-master/resources/models/trees/lowpolyfree.glb',
         (object) => {
-            const gaussianPoints = generatePoints(0, 0, 100, 2000);
+            const gaussianPoints = generatePoints(0, 0, 100, 1000);
 
             // Place trees based on gaussian points
             for (const point of gaussianPoints) {
@@ -308,9 +318,13 @@ async function main() {
                 if (height < 20 && height > 6) {
                     const tree = object.scene.children[0].clone();
 
-                    // Add shadow
+
+                    // Add light and shadow
                     tree.traverse((child) => {
                         if (child.isMesh) {
+                            const treeMaterial = child.material;
+                            treeMaterial.emissive.set('#aaff00');
+                            treeMaterial.emissiveIntensity = 0.1;
                             child.castShadow = true;
                             child.receiveShadow = true;
                         }
@@ -320,9 +334,7 @@ async function main() {
                     tree.position.y = height - 2;
                     tree.position.z = pz;
 
-                    //tree.rotation.y = Math.random() * (2 * Math.PI);
-
-                    tree.scale.multiplyScalar(1.5 + Math.random() * 1);
+                    tree.scale.multiplyScalar(4 + Math.random() * 1);
 
                     scene.add(tree);
                 }
@@ -337,54 +349,6 @@ async function main() {
             console.error('Error loading model.', error);
         }
     );
-
-    /* old tree code
-
-         loader.load(
-             // resource URL
-             'threejs-template-master/resources/models/kenney_nature_kit/tree_thin.glb',
-             // called when resource is loaded
-             (object) => {
-                 for (let x = -150; x < 150; x += 8) {
-                     for (let z = -150; z < 150; z += 8) {
-
-                         const px = x + 1 + (6 * Math.random()) - 3;
-                         const pz = z + 1 + (6 * Math.random()) - 3;
-
-                         const height = terrainGeometry.getHeightAt(px, pz);
-
-                         if (height < 30 && height > 6 ) {
-                             const tree = object.scene.children[0].clone();
-
-                             tree.traverse((child) => {
-                                 if (child.isMesh) {
-                                     child.castShadow = true;
-                                     child.receiveShadow = true;
-                                 }
-                             });
-
-                             tree.position.x = px;
-                             tree.position.y = height - 2;
-                             tree.position.z = pz;
-
-                             tree.rotation.y = Math.random() * (2 * Math.PI);
-
-                             tree.scale.multiplyScalar(1.5 + Math.random() * 1);
-
-                             scene.add(tree);
-                         }
-
-                     }
-                 }
-             },
-             (xhr) => {
-                 console.log(((xhr.loaded / xhr.total) * 100) + '% loaded');
-             },
-             (error) => {
-                 console.error('Error loading model.', error);
-             }
-         );
-    */
 
     /**
     * Add a rock:
@@ -560,21 +524,37 @@ async function main() {
             velocity.add(new Vector3(0,0,1));
         }
 
-        velocity.add(VRMovement())
+        //UpdateCamera(moveSpeed, velocity); // user
+
+
+        //velocity.add(VRMovement())
 
         // update controller rotation.
         mouseLookController.update(pitch, yaw);
         yaw = 0;
         pitch = 0;
 
+
+        //UpdateCamera(moveSpeed, velocity); // user
+
         // apply rotation to velocity vector, and translate moveNode with it.
-        velocity.applyQuaternion(camera.quaternion);
-        user.position.add(velocity);
-        const minHight = terrainGeometry.getHeightAt(user.position.x, user.position.z) + terrain.position.y+1;
-        user.position.y = Math.max(user.position.y, minHight);
+        /*
+                velocity.applyQuaternion(camera.quaternion);
+                user.position.add(velocity);
+                const minHight = terrainGeometry.getHeightAt(user.position.x, user.position.z) + terrain.position.y+1;
+                user.position.y = Math.max(user.position.y, minHight);
+
+
+         */
+
+
+        // user
 
         // Call the animateSmoke function to update the smoke particles
         animateSmoke();
+
+
+
 
         // Call the animate function to start rendering
         animateLava();
@@ -582,11 +562,13 @@ async function main() {
         const time = performance.now() * 0.001;
 
         water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
-
+        UpdateCamera(moveSpeed, velocity);
         // render scene:
         renderer.render(scene, camera);
 
     }
+
+
     //vr rendering requires us to use this
     renderer.setAnimationLoop(loop);
 
