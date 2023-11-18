@@ -92,36 +92,6 @@ export class Smoke {
 
         this.particles_emitter = []; // Initialize an array for particles emitter settings
 
-        // Add a particle emitter configuration to the array
-        /*
-        this.particles_emitter.push({
-            position:{x:-1,y:65,z:-5.5},
-            radius_1:0.5,
-            radius_2:1.5,
-            radius_height:5,//
-            add_time:0.0001,//
-            elapsed:0,
-            live_time_from:7,
-            live_time_to:7.5,
-            opacity_decrease:0.008,
-            rotation_from:0.5,
-            rotation_to:1,
-            speed_from:0.05, //
-            speed_to:0.1, //
-            scale_from:0.2,
-            scale_increase:0.04, //
-            color_from:[1,1,1],
-            color_to:[0,0,0],
-            color_speed_from:0.4,
-            color_speed_to:0.4,
-            brightness_from:1,
-            brightness_to:1,
-            opacity:1,
-            blend:0.8,
-            texture:1,
-        });
-
-         */
         this.particles_emitter.push({
             position: { x: -1, y: 65, z: -5.5 },
             radius_1: 5.0,
@@ -148,9 +118,6 @@ export class Smoke {
             blend: 0.8,
             texture: 1,
         });
-
-
-
 
 
         this.geometry = new THREE.InstancedBufferGeometry(); // Create an InstancedBufferGeometry to render particles
@@ -192,7 +159,7 @@ export class Smoke {
         scene.add(this.mesh["sprite"]);
     }
 
-    // ____________________ PARTICLES EMMITER EMMIT ____________________
+    // ____________________ PARTICLES EMITTER EMIT ____________________
     particleEmitterEmit(item) {
         const radius_1 = item.radius_1 * Math.sqrt(Math.random());
         let theta = 2 * Math.PI * Math.random();
@@ -235,71 +202,6 @@ export class Smoke {
         });
     }
 
-    // ____________________ PERTICLES EMMITER UPDATE ____________________
-    /*
-    particleEmitterUpdate() {
-        let item;
-        let max = this.particles_emitter.length;
-
-        for (let n = 0; n < max; n++) {
-            item = this.particles_emitter[n];
-
-            let add = 0;
-
-            item.elapsed += this.delta;
-            add = Math.floor(item.elapsed / item.add_time);
-            item.elapsed -= add * item.add_time;
-            if (add > 0.016 / item.add_time * 60) {
-                item.elapsed = 0;
-                add = 0;
-            }
-
-            while (add--) {
-                this.particleEmitterEmit(item);
-            }
-        }
-
-        max = this.particles_smoke_a.length;
-        const alive = new Array(max);
-        let i = 0;
-
-        for (let j = 0; j < max; j++) {
-            item = this.particles_smoke_a[j];
-
-            if (item.color_pr < 1) {
-                const color_r = item.color_from[0] + (item.color_to[0] - item.color_from[0]) * item.color_pr;
-                const color_g = item.color_from[1] + (item.color_to[0] - item.color_from[1]) * item.color_pr;
-                const color_b = item.color_from[1] + (item.color_to[0] - item.color_from[2]) * item.color_pr;
-                item.color_pr += this.delta * item.color_speed;
-                item.color[0] = color_r;
-                item.color[1] = color_g;
-                item.color[2] = color_b;
-            } else {
-                item.color[0] = item.color_to[0];
-                item.color[1] = item.color_to[1];
-                item.color[2] = item.color_to[2];
-            }
-
-            item.offset[0] += item.quaternion[0] + this.wind_x;
-            item.offset[1] += item.quaternion[1] + this.wind_y;
-            item.offset[2] += item.quaternion[2] + this.wind_z;
-            item.scale[0] += item.scale_increase;
-            item.scale[1] += item.scale_increase;
-
-            if (item.live > 0) {
-                item.live -= this.delta;
-            } else {
-                item.color[3] -= item.opacity_decrease;
-            }
-            if (item.color[3] > 0) {
-                alive[i] = item;
-                i++;
-            }
-        }
-        alive.length = i;
-        this.particles_smoke_a = alive;
-    }
-*/
     particleEmitterUpdate() {
         let item;
         let max = this.particles_emitter.length;
@@ -358,11 +260,6 @@ export class Smoke {
         }
 
         this.particles_smoke_a = alive;
-    }
-
-    emitParticles(item) {
-        // Implement the logic of your particles_emitter_emmit function here.
-        // You can copy the code from your original function.
     }
 
     // ____________________ PARTICLES UPDATE ____________________

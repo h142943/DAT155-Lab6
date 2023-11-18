@@ -23,7 +23,6 @@ import {
 
 import Utilities from './js/lib/Utilities.js';
 import MouseLookController from './js/controls/MouseLookController.js';
-
 import TextureSplattingMaterial from './js/materials/TextureSplattingMaterial.js';
 import TerrainBufferGeometry from './js/terrain/TerrainBufferGeometry.js';
 import { GLTFLoader } from './js/loaders/GLTFLoader.js';
@@ -73,7 +72,6 @@ async function main() {
 
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFSoftShadowMap;
-    //renderer.outputEncoding = GammaEncoding;
 
     /**
      * Handle window resize:
@@ -117,7 +115,7 @@ async function main() {
     scene.add(directionalLight.target);
 
     camera.position.z = 60;
-    camera.position.y =70;
+    camera.position.y = 70;
     camera.rotation.x -= Math.PI * 0.25;
 
     function UpdateCamera(moveSpeed, velocity) {
@@ -133,7 +131,6 @@ async function main() {
         }
 
         // Test for terreng:
-
         const rayDirection = new Vector3(0, -1, 0);
         const ray = new Raycaster(cameraPosition, rayDirection, 0, 2);
 
@@ -164,7 +161,7 @@ async function main() {
      */
 
     const heightmapImage = await Utilities.loadImage(main_url+'/resources/images/vulkanmodell3.png');
-    const width = 124 * 3;
+    const width = 372;
 
     const simplex = new SimplexNoise();
     const terrainGeometry = new TerrainBufferGeometry({
@@ -172,26 +169,26 @@ async function main() {
         heightmapImage,
         // noiseFn: simplex.noise.bind(simplex),
         numberOfSubdivisions: 600,
-        height: 42 * 3
+        height: 126
     });
 
-    const grassTexture = new TextureLoader().load(main_url + 'resources/textures/grass_02.png');
+    const grassTexture = new TextureLoader().load(main_url+'resources/textures/grass_02.png');
     grassTexture.wrapS = RepeatWrapping;
     grassTexture.wrapT = RepeatWrapping;
     grassTexture.repeat.set(5000 / width, 5000 / width);
 
-    const snowyRockTexture = new TextureLoader().load(main_url + 'resources/textures/snowy_rock_01.png');
+    const snowyRockTexture = new TextureLoader().load(main_url+'resources/textures/snowy_rock_01.png');
     snowyRockTexture.wrapS = RepeatWrapping;
     snowyRockTexture.wrapT = RepeatWrapping;
     snowyRockTexture.repeat.set(1500 / width, 1500 / width);
 
 
-    const splatMap = new TextureLoader().load(main_url +'resources/images/vulkan-splatmap.jpg');
+    const splatMap = new TextureLoader().load(main_url+'resources/images/vulkanmodell3.png');
 
     const terrainMaterial = new TextureSplattingMaterial({
         color: 0xffffff,
         shininess: 0,
-        textures: [snowyRockTexture, grassTexture],
+        textures: [grassTexture, snowyRockTexture],
         splatMaps: [splatMap]
     });
 
@@ -209,16 +206,13 @@ async function main() {
     //if we add more water segments, we have more detail for the depth buffer, solving the weird coastline
     const waterGeometry = new PlaneGeometry( 10000, 10000, 100);
 
-
     let water = new Water(
         waterGeometry,
         {
             textureWidth: 512,
             textureHeight: 512,
-            waterNormals: new TextureLoader().load( main_url+'resources/images/waternormals.jpg', function ( texture ) {
-
+            waterNormals: new TextureLoader().load(main_url+'resources/images/waternormals.jpg', function ( texture ) {
                 texture.wrapS = texture.wrapT = RepeatWrapping;
-
             } ),
             sunDirection: new Vector3(),
             sunColor: 0xffffff,
@@ -233,22 +227,17 @@ async function main() {
 
     scene.add( water );
 
-    /**Smoke*/
-    const smoke = new Smoke(camera,scene);
 
     /**
      * Create the Lava geometry:
      */
-        // Create a lava texture
-    const lavaTexture = new TextureLoader().load('threejs-template-master/resources/textures/lavaTexture.jpg');
 
-    // Create an emissive map for the lava
-    const emissiveMap = new TextureLoader().load('threejs-template-master/resources/textures/emissivelava.jpg');
+    // Load lava texture, emissive map and displacement map
+    const lavaTexture = new TextureLoader().load(main_url+'/resources/textures/lavaTexture.jpg');
+    const emissiveMap = new TextureLoader().load(main_url+'/resources/textures/emissivelava.jpg');
+    const displacementMap = new TextureLoader().load(main_url+'/resources/textures/displacedmentlava.png');
 
-    // Create a displacement map for the lava
-    const displacementMap = new TextureLoader().load('threejs-template-master/resources/textures/displacedmentlava.png');
-
-    // Create a lava geometry (e.g., a cone for the volcano)
+    // Create a lava geometry
     const lavaGeometry = new PlaneBufferGeometry(20, 20, 256, 256);
 
     // Modify UV coordinates to make the entire texture wave
@@ -297,18 +286,16 @@ async function main() {
         return points;
     }
 
-
-    // instantiate a GLTFLoader:
+    // instantiate a GLTFLoader for loading the trees:
     const loader = new GLTFLoader();
 
-    // Loader for tree model
     loader.load(
         'threejs-template-master/resources/models/trees/lowpolyfree.glb',
         (object) => {
-            const gaussianPoints = generatePoints(0, 0, 100, 1000);
+            const points = generatePoints(0, 0, 100, 1000);
 
             // Place trees based on gaussian points
-            for (const point of gaussianPoints) {
+            for (const point of points) {
                 const px = point.x;
                 const pz = point.y;
 
@@ -318,12 +305,11 @@ async function main() {
                 if (height < 20 && height > 6) {
                     const tree = object.scene.children[0].clone();
 
-
                     // Add light and shadow
                     tree.traverse((child) => {
                         if (child.isMesh) {
                             const treeMaterial = child.material;
-                            treeMaterial.emissive.set('#aaff00');
+                            treeMaterial.emissive.set('#aaff00'); // Add light green to the model (to brighten it)
                             treeMaterial.emissiveIntensity = 0.1;
                             child.castShadow = true;
                             child.receiveShadow = true;
@@ -429,7 +415,7 @@ async function main() {
             if(gamepad) {
                 const x = gamepad.axes[2];
                 const y = gamepad.axes[3];
-                //*speed so that the possition depends on player speed
+                //*speed so that the position depends on player speed
                 var movement = new Vector3(x*speed, 0, y*speed);
 
                 //same idea with speed here
@@ -441,11 +427,13 @@ async function main() {
                 }
                 return movement;
             }
-
-
         }
         return new Vector3();
     }
+
+    /**Smoke*/
+    const smoke = new Smoke(camera,scene);
+
     // Animation loop to make the smoke rise
     function animateSmoke(){
         smoke.tick(clock);
@@ -461,7 +449,7 @@ async function main() {
         lavaMaterial.displacementScale = displacementScale;
     }
     function loop() {
-        //switching to clock because we can no longer use perfomance due to switching to animation loop (does the same thing)
+        //switching to clock because we can no longer use performance due to switching to animation loop (does the same thing)
         const delta = clock.getDelta();
 
         const moveSpeed = move.speed * delta;
@@ -485,15 +473,12 @@ async function main() {
         }
 
         //UpdateCamera(moveSpeed, velocity); // user
-
-
         //velocity.add(VRMovement())
 
         // update controller rotation.
         mouseLookController.update(pitch, yaw);
         yaw = 0;
         pitch = 0;
-
 
         //UpdateCamera(moveSpeed, velocity); // user
 
@@ -503,18 +488,12 @@ async function main() {
                 user.position.add(velocity);
                 const minHight = terrainGeometry.getHeightAt(user.position.x, user.position.z) + terrain.position.y+1;
                 user.position.y = Math.max(user.position.y, minHight);
-
-
          */
-
 
         // user
 
         // Call the animateSmoke function to update the smoke particles
         animateSmoke();
-
-
-
 
         // Call the animate function to start rendering
         animateLava();
@@ -525,13 +504,10 @@ async function main() {
         UpdateCamera(moveSpeed, velocity);
         // render scene:
         renderer.render(scene, camera);
-
     }
-
 
     //vr rendering requires us to use this
     renderer.setAnimationLoop(loop);
-
 }
 
 main(); // Start application
