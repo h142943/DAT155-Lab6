@@ -478,7 +478,7 @@ async function main() {
         }
 
         //UpdateCamera(moveSpeed, velocity); // user
-        //velocity.add(VRMovement())
+        velocity.add(VRMovement())
 
         // update controller rotation.
         mouseLookController.update(pitch, yaw);
@@ -488,12 +488,12 @@ async function main() {
         //UpdateCamera(moveSpeed, velocity); // user
 
         // apply rotation to velocity vector, and translate moveNode with it.
-        /*
+
                 velocity.applyQuaternion(camera.quaternion);
                 user.position.add(velocity);
                 const minHight = terrainGeometry.getHeightAt(user.position.x, user.position.z) + terrain.position.y+1;
                 user.position.y = Math.max(user.position.y, minHight);
-         */
+
 
         // user
 
