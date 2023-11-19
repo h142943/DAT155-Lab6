@@ -114,13 +114,16 @@ async function main() {
     directionalLight.target.position.set(0, 15, 0);
     scene.add(directionalLight.target);
 
-    camera.position.z = 60;
-    camera.position.y = 70;
+
+    //Camera
+
+    user.position.z = 60;
+    user.position.y =70;
     camera.rotation.x -= Math.PI * 0.25;
 
     function UpdateCamera(moveSpeed, velocity) {
 
-        const cameraPosition = camera.position;
+        const cameraPosition = user.position;
 
         velocity.applyQuaternion(camera.quaternion);
         cameraPosition.add(velocity);
@@ -131,6 +134,7 @@ async function main() {
         }
 
         // Test for terreng:
+
         const rayDirection = new Vector3(0, -1, 0);
         const ray = new Raycaster(cameraPosition, rayDirection, 0, 2);
 
@@ -148,8 +152,9 @@ async function main() {
             cameraPosition.y += 2;
         }
 
-        camera.position.y = cameraPosition.y;
+        user.position.y = cameraPosition.y;
     }
+
 
     /**
      * Add terrain:
@@ -294,7 +299,7 @@ async function main() {
         (object) => {
             const points = generatePoints(0, 0, 100, 1000);
 
-            // Place trees based on gaussian points
+            // Place trees based on points
             for (const point of points) {
                 const px = point.x;
                 const pz = point.y;
